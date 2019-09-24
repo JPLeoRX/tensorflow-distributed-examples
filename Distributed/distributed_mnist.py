@@ -11,7 +11,7 @@ from Distributed.mnist_shared import build_and_compile_cnn_model, scale, save_mo
 # This variable must be set on each worker with changing index
 os.environ["TF_CONFIG"] = json.dumps({
     'cluster': {
-        'worker': ["localhost:2222", "localhost:2223", "localhost:2224"]
+        'worker': ["localhost:2222", "localhost:2223"]
     },
     'task': {'type': 'worker', 'index': 0}
 })
@@ -35,30 +35,29 @@ BATCH_SIZE_PER_REPLICA = 64
 BATCH_SIZE = BATCH_SIZE_PER_REPLICA * NUM_OF_WORKERS
 
 # Prepare training/testing dataset
-dataset_train_unbatched = dataset_train_raw.map(scale).shuffle(BUFFER_SIZE)
-dataset_train = dataset_train_unbatched.batch(BATCH_SIZE)
+dataset_train = dataset_train_raw.map(scale).shuffle(BUFFER_SIZE).batch(BATCH_SIZE)
 dataset_test = dataset_test_raw.map(scale).batch(BATCH_SIZE)
 
 # Build and train the model as a single worker
 model = build_and_compile_cnn_model()
+model.fit(x=dataset_train, epochs=3)
+
+# Build and train the model as multi worker
+#with strategy.scope():
+#    model = build_and_compile_cnn_model()
+#model.fit(x=dataset_train, epochs=3)
+
+# Show model summary, and evaluate it
 model.summary()
-training_history = model.fit(x=dataset_train, epochs=3)
 eval_loss, eval_acc = model.evaluate(x=dataset_test)
-predictions = model.predict(dataset_test)
 print("")
 print("Eval loss: {}, Eval Accuracy: {}".format(eval_loss, eval_acc))
 
 # Save the model, reopen it and check that the state is preserved
 save_model(model, "model.h5")
 new_model = load_model("model.h5")
+predictions = model.predict(dataset_test)
 new_predictions = new_model.predict(dataset_test)
 np.testing.assert_allclose(predictions, new_predictions, rtol=1e-6, atol=1e-6)
-
-# Build and train the model as multi worker
-#with strategy.scope():
-#  multi_worker_model = build_and_compile_cnn_model()
-#multi_worker_model.fit(x=dataset_train, epochs=3)
-#multi_worker_model.evaluate(x=dataset_test)
-
 
 exit()

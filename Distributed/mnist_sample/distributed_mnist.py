@@ -35,7 +35,7 @@ def main():
     # Build and train the model as multi worker
     with strategy.scope():
        model = build_and_compile_cnn_model()
-    model.fit(x=dataset_train, epochs=1)
+    model.fit(x=dataset_train, epochs=10)
 
     # Show model summary, and evaluate it
     model.summary()

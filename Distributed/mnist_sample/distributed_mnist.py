@@ -5,7 +5,7 @@ import os
 import numpy as np
 import tensorflow as tf
 import tensorflow_datasets as tfds
-from Distributed.mnist_sample.mnist_shared import *
+from mnist_shared import *
 
 def main():
     # Define and load datasets

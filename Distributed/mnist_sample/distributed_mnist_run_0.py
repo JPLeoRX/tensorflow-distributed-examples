@@ -8,7 +8,7 @@ from Distributed.mnist_sample.distributed_mnist import main
 # This variable must be set on each worker with changing index
 os.environ["TF_CONFIG"] = json.dumps({
     'cluster': {
-        'worker': ["localhost:2222", "10.111.54.31:2222"]
+        'worker': ["localhost:2222", "10.111.54.32:2222"]
     },
     'task': {'type': 'worker', 'index': 0}
 })

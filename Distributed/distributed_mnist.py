@@ -45,6 +45,7 @@ dataset_test = dataset_test_raw.map(scale).batch(BATCH_SIZE)
 single_worker_model = build_and_compile_cnn_model()
 single_worker_model.fit(x=dataset_train, epochs=3)
 eval_loss, eval_acc = single_worker_model.evaluate(x=dataset_test)
+print("")
 print("Eval loss: {}, Eval Accuracy: {}".format(eval_loss, eval_acc))
 
 

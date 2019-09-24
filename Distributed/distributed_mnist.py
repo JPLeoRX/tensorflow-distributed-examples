@@ -47,7 +47,7 @@ dataset_test = dataset_test_raw.map(scale).batch(BATCH_SIZE).with_options(option
 # Build and train the model as multi worker
 with strategy.scope():
    model = build_and_compile_cnn_model()
-model.fit(x=dataset_train, epochs=3)
+model.fit(x=dataset_train, epochs=1)
 
 # Show model summary, and evaluate it
 model.summary()
@@ -56,10 +56,10 @@ print("")
 print("Eval loss: {}, Eval Accuracy: {}".format(eval_loss, eval_acc))
 
 # Save the model, reopen it and check that the state is preserved
-save_model(model, "model.h5")
-new_model = load_model("model.h5")
-predictions = model.predict(dataset_test)
-new_predictions = new_model.predict(dataset_test)
-np.testing.assert_allclose(predictions, new_predictions, rtol=1e-6, atol=1e-6)
+# save_model(model, "model.h5")
+# new_model = load_model("model.h5")
+# predictions = model.predict(dataset_test)
+# new_predictions = new_model.predict(dataset_test)
+# np.testing.assert_allclose(predictions, new_predictions, rtol=1e-6, atol=1e-6)
 
 exit()

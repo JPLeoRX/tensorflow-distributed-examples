@@ -25,3 +25,11 @@ def build_and_compile_cnn_model():
     )
 
     return model
+
+# Save model to file
+def save_model(model, path):
+    model.save(path)
+
+# Load model from file
+def load_model(path):
+    return tf.keras.models.load_model(path)

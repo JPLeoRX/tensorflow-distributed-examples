@@ -39,12 +39,14 @@ print("{} samples in training dataset. {} samples in testing dataset".format(num
 # Prepare training/testing dataset
 dataset_train_unbatched = dataset_train_raw.map(scale).shuffle(BUFFER_SIZE)
 dataset_train = dataset_train_unbatched.batch(BATCH_SIZE)
-dataset_test = dataset_test_raw.map(scale)
+dataset_test = dataset_test_raw.map(scale).batch(BATCH_SIZE)
 
 # Build and train the model as a single worker
 single_worker_model = build_and_compile_cnn_model()
 single_worker_model.fit(x=dataset_train, epochs=3)
-single_worker_model.evaluate(x=dataset_test)
+eval_loss, eval_acc = single_worker_model.evaluate(x=dataset_test)
+print("Eval loss: {}, Eval Accuracy: {}".format(eval_loss, eval_acc))
+
 
 # Build and train the model as multi worker
 #with strategy.scope():

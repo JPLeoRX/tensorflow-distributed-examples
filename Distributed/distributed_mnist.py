@@ -35,17 +35,19 @@ BATCH_SIZE_PER_REPLICA = 64
 BATCH_SIZE = BATCH_SIZE_PER_REPLICA * NUM_OF_WORKERS
 
 # Prepare training/testing dataset
-dataset_train = dataset_train_raw.map(scale).shuffle(BUFFER_SIZE).batch(BATCH_SIZE)
-dataset_test = dataset_test_raw.map(scale).batch(BATCH_SIZE)
+options = tf.data.Options()
+options.experimental_distribute.auto_shard = False
+dataset_train = dataset_train_raw.map(scale).shuffle(BUFFER_SIZE).batch(BATCH_SIZE).with_options(options)
+dataset_test = dataset_test_raw.map(scale).batch(BATCH_SIZE).with_options(options)
 
 # Build and train the model as a single worker
-model = build_and_compile_cnn_model()
-model.fit(x=dataset_train, epochs=3)
+# model = build_and_compile_cnn_model()
+# model.fit(x=dataset_train, epochs=3)
 
 # Build and train the model as multi worker
-#with strategy.scope():
-#    model = build_and_compile_cnn_model()
-#model.fit(x=dataset_train, epochs=3)
+with strategy.scope():
+   model = build_and_compile_cnn_model()
+model.fit(x=dataset_train, epochs=3)
 
 # Show model summary, and evaluate it
 model.summary()

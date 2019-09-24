@@ -22,19 +22,19 @@ os.environ["TF_CONFIG"] = json.dumps({
 datasets, info = tfds.load(name='mnist', with_info=True, as_supervised=True)
 dataset_train_raw = datasets['train']
 dataset_test_raw = datasets['test']
+NUM_OF_TRAIN_SAMPLES = info.splits['train'].num_examples
+NUM_OF_TEST_SAMPLES = info.splits['test'].num_examples
+print("{} samples in training dataset, {} samples in testing dataset".format(NUM_OF_TRAIN_SAMPLES, NUM_OF_TEST_SAMPLES))
 
 # Define distributed strategy
 strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
-print("Number of replicas in distribution: {}".format(strategy.num_replicas_in_sync))
+NUM_OF_WORKERS = strategy.num_replicas_in_sync
+print("{} replicas in distribution".format(NUM_OF_WORKERS))
 
 # Determine datasets sizes
-num_train_examples = info.splits['train'].num_examples
-num_test_examples = info.splits['test'].num_examples
-NUM_OF_WORKERS = strategy.num_replicas_in_sync
 BUFFER_SIZE = 10000
 BATCH_SIZE_PER_REPLICA = 64
 BATCH_SIZE = BATCH_SIZE_PER_REPLICA * NUM_OF_WORKERS
-print("{} samples in training dataset. {} samples in testing dataset".format(num_train_examples, num_test_examples))
 
 # Prepare training/testing dataset
 dataset_train_unbatched = dataset_train_raw.map(scale).shuffle(BUFFER_SIZE)

@@ -6,8 +6,7 @@ import numpy as np
 import os
 import tensorflow as tf
 import tensorflow_datasets as tfds
-
-from mnist_shared import scale, build_and_compile_cnn_model
+from Distributed.mnist_shared import build_and_compile_cnn_model, scale
 
 # Create cluster
 # This variable must be set on each worker with changing index

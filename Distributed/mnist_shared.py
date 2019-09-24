@@ -33,3 +33,11 @@ def save_model(model, path):
 # Load model from file
 def load_model(path):
     return tf.keras.models.load_model(path)
+
+# Save model to file (using SavedModel)
+def save_model_with_saved_model(model, path):
+    tf.keras.experimental.export_saved_model(model, path)
+
+# Load model from file (using SavedModel)
+def load_model_with_saved_model(path):
+    return tf.keras.experimental.load_from_saved_model(path)

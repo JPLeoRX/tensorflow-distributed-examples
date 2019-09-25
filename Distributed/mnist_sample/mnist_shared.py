@@ -22,7 +22,7 @@ def build_and_compile_cnn_model():
     # Pre-compile it
     model.compile(
       loss=tf.keras.losses.sparse_categorical_crossentropy,
-      optimizer=tf.keras.optimizers.SGD(learning_rate=0.001),
+      optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
       metrics=['accuracy']
     )
 

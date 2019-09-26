@@ -17,7 +17,7 @@ def main():
     print("{} samples in training dataset, {} samples in testing dataset".format(NUM_OF_TRAIN_SAMPLES, NUM_OF_TEST_SAMPLES))
 
     # Define distributed strategy
-    strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy(tf.distribute.experimental.CollectiveCommunication.NCCL)
+    strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
     NUM_OF_WORKERS = strategy.num_replicas_in_sync
     print("{} replicas in distribution".format(NUM_OF_WORKERS))
 
@@ -35,7 +35,7 @@ def main():
     # Build and train the model as multi worker
     with strategy.scope():
        model = build_and_compile_cnn_model()
-    model.fit(x=dataset_train, epochs=10)
+    model.fit(x=dataset_train, epochs=1)
 
     # Show model summary, and evaluate it
     model.summary()

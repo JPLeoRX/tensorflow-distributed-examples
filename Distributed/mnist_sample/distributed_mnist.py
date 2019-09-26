@@ -17,7 +17,7 @@ def main():
     print("{} samples in training dataset, {} samples in testing dataset".format(NUM_OF_TRAIN_SAMPLES, NUM_OF_TEST_SAMPLES))
 
     # Define distributed strategy
-    strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
+    strategy = tf.distribute.experimental.MirroredStrategy()
     NUM_OF_WORKERS = strategy.num_replicas_in_sync
     print("{} replicas in distribution".format(NUM_OF_WORKERS))
 

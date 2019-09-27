@@ -5,9 +5,19 @@ import os
 import numpy as np
 import tensorflow as tf
 import tensorflow_datasets as tfds
+import horovod.tensorflow.keras as hvd
 from mnist_shared import *
 
 def main():
+    # Horovod: initialize Horovod.
+    hvd.init()
+
+    # Horovod: pin GPU to be used to process local rank (one GPU per process)
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    config.gpu_options.visible_device_list = str(hvd.local_rank())\
+    tf.keras.backend.set_session(tf.Session(config=config))
+
     # Define and load datasets
     datasets, info = tfds.load(name='mnist', with_info=True, as_supervised=True)
     dataset_train_raw = datasets['train']
@@ -35,7 +45,19 @@ def main():
     # Build and train the model as multi worker
     with strategy.scope():
        model = build_and_compile_cnn_model()
-    model.fit(x=dataset_train, epochs=10)
+
+    callbacks = [
+       # Horovod: broadcast initial variable states from rank 0 to all other processes.
+       # This is necessary to ensure consistent initialization of all workers when
+       # training is started with random weights or restored from a checkpoint.
+       hvd.callbacks.BroadcastGlobalVariablesCallback(0),
+    ]
+
+    # Horovod: save checkpoints only on worker 0 to prevent other workers from corrupting them.
+    if hvd.rank() == 0:
+       callbacks.append(tf.keras.callbacks.ModelCheckpoint('./checkpoint-{epoch}.h5'))
+
+    model.fit(x=dataset_train, epochs=10, callbacks=callbacks)
 
     # Show model summary, and evaluate it
     model.summary()

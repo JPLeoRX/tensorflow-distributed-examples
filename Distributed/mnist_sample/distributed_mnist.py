@@ -60,7 +60,7 @@ def main():
     if hvd.rank() == 0:
        callbacks.append(tf.keras.callbacks.ModelCheckpoint('./checkpoint-{epoch}.h5'))
 
-    model.fit(x=dataset_train, batch_size=BATCH_SIZE, callbacks=callbacks, epochs=10, verbose=1)
+    model.fit(x=dataset_train, callbacks=callbacks, epochs=10, verbose=1)
 
     # Show model summary, and evaluate it
     model.summary()

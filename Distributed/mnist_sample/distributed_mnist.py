@@ -27,8 +27,9 @@ def main():
     print("{} samples in training dataset, {} samples in testing dataset".format(NUM_OF_TRAIN_SAMPLES, NUM_OF_TEST_SAMPLES))
 
     # Define distributed strategy
-    strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
-    NUM_OF_WORKERS = strategy.num_replicas_in_sync
+    # strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
+    # NUM_OF_WORKERS = strategy.num_replicas_in_sync
+    NUM_OF_WORKERS = hvd.size()
     print("{} replicas in distribution".format(NUM_OF_WORKERS))
 
     # Determine datasets sizes
@@ -43,9 +44,11 @@ def main():
     dataset_test = dataset_test_raw.map(scale).batch(BATCH_SIZE).with_options(options)
 
     # Build and train the model as multi worker
-    with strategy.scope():
-       model = build_and_compile_cnn_model()
+#    with strategy.scope():
+#       model = build_and_compile_cnn_model()
 
+    model = build_and_compile_cnn_model()
+    
     callbacks = [
        # Horovod: broadcast initial variable states from rank 0 to all other processes.
        # This is necessary to ensure consistent initialization of all workers when

@@ -1,5 +1,4 @@
 import tensorflow as tf
-import horovod.tensorflow.keras as hvd
 
 # Pixel values, which are 0-255, have to be normalized to the 0-1 range. Define this scale in a function.
 def scale(image, label):
@@ -24,16 +23,10 @@ def build_and_compile_cnn_model():
       tf.keras.layers.Dense(10, activation='softmax')
     ])
 
-    # Horovod: adjust learning rate based on number of GPUs.
-    opt = tf.keras.optimizers.Adam(learning_rate=0.001)
-
-    # Horovod: add Horovod Distributed Optimizer.
-    opt = hvd.DistributedOptimizer(opt)
-
     # Pre-compile it
     model.compile(
       loss=tf.keras.losses.sparse_categorical_crossentropy,
-      optimizer=opt,
+      optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
       metrics=['accuracy']
     )
 

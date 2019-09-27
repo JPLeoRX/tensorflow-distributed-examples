@@ -48,7 +48,7 @@ def main():
 #       model = build_and_compile_cnn_model()
 
     model = build_and_compile_cnn_model()
-    
+
     callbacks = [
        # Horovod: broadcast initial variable states from rank 0 to all other processes.
        # This is necessary to ensure consistent initialization of all workers when
@@ -60,7 +60,7 @@ def main():
     if hvd.rank() == 0:
        callbacks.append(tf.keras.callbacks.ModelCheckpoint('./checkpoint-{epoch}.h5'))
 
-    model.fit(x=dataset_train, epochs=10, callbacks=callbacks)
+    model.fit(x=dataset_train, batch_size=BATCH_SIZE, callbacks=callbacks, epochs=10, verbose=1)
 
     # Show model summary, and evaluate it
     model.summary()

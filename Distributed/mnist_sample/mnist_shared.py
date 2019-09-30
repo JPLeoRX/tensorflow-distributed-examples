@@ -10,9 +10,13 @@ def scale(image, label):
 def build_and_compile_cnn_model():
     # Declare model
     model = tf.keras.Sequential([
-      tf.keras.layers.Conv2D(32, 3, activation='relu', input_shape=(28, 28, 1)),
-      tf.keras.layers.MaxPooling2D(),
-      tf.keras.layers.Flatten(),
+        tf.keras.layers.Conv2D(24, 5, activation='relu', padding='same', input_shape=(28, 28, 1)),
+        tf.keras.layers.MaxPooling2D(),
+        tf.keras.layers.Conv2D(48, 5, activation='relu', padding='same'),
+        tf.keras.layers.MaxPooling2D(),
+        tf.keras.layers.Conv2D(64, 5, activation='relu', padding='same'),
+        tf.keras.layers.MaxPooling2D(),
+        tf.keras.layers.Flatten(),
         tf.keras.layers.Dense(4096, activation='relu'),
         tf.keras.layers.Dense(4096, activation='relu'),
         tf.keras.layers.Dense(2048, activation='relu'),

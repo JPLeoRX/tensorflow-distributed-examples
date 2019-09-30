@@ -43,7 +43,7 @@ dataset_test = dataset_test_raw.map(scale).batch(BATCH_SIZE).with_options(option
 # Build and train the model as multi worker
 with strategy.scope():
     model = build_and_compile_cnn_model()
-model.fit(x=dataset_train, epochs=50)
+model.fit(x=dataset_train, epochs=40)
 
 # Show model summary, and evaluate it
 model.summary()

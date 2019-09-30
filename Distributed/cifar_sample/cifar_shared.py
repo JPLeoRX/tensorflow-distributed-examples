@@ -18,17 +18,18 @@ def build_and_compile_cnn_model():
         tf.keras.layers.Conv2D(96, 3, activation='relu', padding='same'),
         tf.keras.layers.Conv2D(96, 3, activation='relu', padding='same'),
         tf.keras.layers.MaxPooling2D(2, 2),
-        tf.keras.layers.Dropout(0.25),
+        tf.keras.layers.Dropout(0.3),
 
-        tf.keras.layers.Conv2D(192, 3, activation='relu', padding='same'),
+        tf.keras.layers.Conv2D(256, 3, activation='relu', padding='same'),
+        tf.keras.layers.Conv2D(256, 3, activation='relu', padding='same'),
         tf.keras.layers.MaxPooling2D(2, 2),
-        tf.keras.layers.Dropout(0.25),
+        tf.keras.layers.Dropout(0.4),
         tf.keras.layers.Flatten(),
 
-        tf.keras.layers.Dense(512, activation='relu'),
-        tf.keras.layers.Dropout(0.5),
-        tf.keras.layers.Dense(256, activation='relu'),
-        tf.keras.layers.Dropout(0.5),
+        # tf.keras.layers.Dense(512, activation='relu'),
+        # tf.keras.layers.Dropout(0.5),
+        # tf.keras.layers.Dense(256, activation='relu'),
+        # tf.keras.layers.Dropout(0.5),
         tf.keras.layers.Dense(10, activation='softmax')
     ])
 

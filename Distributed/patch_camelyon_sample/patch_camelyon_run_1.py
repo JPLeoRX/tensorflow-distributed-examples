@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import json
 import os
-from patch_camelyon import main
+from patch_camelyon_main import main
 
 # Create cluster
 # This variable must be set on each worker with changing index

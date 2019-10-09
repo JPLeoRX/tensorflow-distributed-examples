@@ -60,10 +60,12 @@ def normalize(x):
     return x
 
 def one_hot_encode(x):
-    encoded = np.zeros((len(x), 10))
-    for idx, val in enumerate(x):
-        encoded[idx][val] = 1
-    return encoded
+    # print("x = {}".format(x))
+    # encoded = np.zeros((len(x), 10))
+    # for idx, val in enumerate(x):
+    #     encoded[idx][val] = 1
+    # return encoded
+    return x
 
 def _preprocess_and_save(normalize, one_hot_encode, features, labels, filename):
     features = normalize(features)
@@ -118,19 +120,19 @@ def build_and_compile_cnn_model():
     # Declare model
     model = tf.keras.Sequential([
         tf.keras.layers.Conv2D(48, 3, activation='relu', padding='same', input_shape=(32, 32, 3)),
-        #tf.keras.layers.Conv2D(48, 3, activation='relu', padding='same'),
+        tf.keras.layers.Conv2D(48, 3, activation='relu', padding='same'),
         tf.keras.layers.MaxPooling2D(2, 2),
-        #tf.keras.layers.Dropout(0.25),
+        tf.keras.layers.Dropout(0.25),
 
-        #tf.keras.layers.Conv2D(96, 3, activation='relu', padding='same'),
-        #tf.keras.layers.Conv2D(96, 3, activation='relu', padding='same'),
-        #tf.keras.layers.MaxPooling2D(2, 2),
-        #tf.keras.layers.Dropout(0.3),
+        tf.keras.layers.Conv2D(96, 3, activation='relu', padding='same'),
+        tf.keras.layers.Conv2D(96, 3, activation='relu', padding='same'),
+        tf.keras.layers.MaxPooling2D(2, 2),
+        tf.keras.layers.Dropout(0.3),
 
-        #tf.keras.layers.Conv2D(256, 3, activation='relu', padding='same'),
-        #tf.keras.layers.Conv2D(256, 3, activation='relu', padding='same'),
-        #tf.keras.layers.MaxPooling2D(2, 2),
-        #tf.keras.layers.Dropout(0.4),
+        tf.keras.layers.Conv2D(256, 3, activation='relu', padding='same'),
+        tf.keras.layers.Conv2D(256, 3, activation='relu', padding='same'),
+        tf.keras.layers.MaxPooling2D(2, 2),
+        tf.keras.layers.Dropout(0.4),
         tf.keras.layers.Flatten(),
 
         tf.keras.layers.Dense(10, activation='softmax')
@@ -142,6 +144,8 @@ def build_and_compile_cnn_model():
       optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
       metrics=['accuracy']
     )
+
+    model.summary()
 
     return model
 #-----------------------------------------------------------------------------------------------------------------------
@@ -198,8 +202,8 @@ BATCH_SIZE_PER_REPLICA = 64
 BATCH_SIZE = BATCH_SIZE_PER_REPLICA * NUM_OF_WORKERS
 options = tf.data.Options()
 options.experimental_distribute.auto_shard = False
-train_dataset = train_dataset_unbatched#.shuffle(BUFFER_SIZE).batch(BATCH_SIZE).with_options(options)
-test_dataset = test_dataset_unbatched#.batch(BATCH_SIZE).with_options(options)
+train_dataset = train_dataset_unbatched.shuffle(BUFFER_SIZE).batch(BATCH_SIZE).with_options(options)
+test_dataset = test_dataset_unbatched.batch(BATCH_SIZE).with_options(options)
 
 # Build and train the model as multi worker
 with strategy.scope():
@@ -217,4 +221,4 @@ model.save("model.h5")
 new_model = tf.keras.models.load_model("model.h5")
 predictions = model.predict(test_dataset)
 new_predictions = new_model.predict(test_dataset)
-np.testing.assert_allclose(predictions, new_predictions, rtol=1e-6, atol=1e-6)
+np.testing.assert_allclose(predictions, new_predictions, rtol=1e-5, atol=1e-5)

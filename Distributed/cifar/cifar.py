@@ -118,25 +118,21 @@ def build_and_compile_cnn_model():
     # Declare model
     model = tf.keras.Sequential([
         tf.keras.layers.Conv2D(48, 3, activation='relu', padding='same', input_shape=(32, 32, 3)),
-        tf.keras.layers.Conv2D(48, 3, activation='relu', padding='same'),
+        #tf.keras.layers.Conv2D(48, 3, activation='relu', padding='same'),
         tf.keras.layers.MaxPooling2D(2, 2),
-        tf.keras.layers.Dropout(0.25),
+        #tf.keras.layers.Dropout(0.25),
 
-        tf.keras.layers.Conv2D(96, 3, activation='relu', padding='same'),
-        tf.keras.layers.Conv2D(96, 3, activation='relu', padding='same'),
-        tf.keras.layers.MaxPooling2D(2, 2),
-        tf.keras.layers.Dropout(0.3),
+        #tf.keras.layers.Conv2D(96, 3, activation='relu', padding='same'),
+        #tf.keras.layers.Conv2D(96, 3, activation='relu', padding='same'),
+        #tf.keras.layers.MaxPooling2D(2, 2),
+        #tf.keras.layers.Dropout(0.3),
 
         #tf.keras.layers.Conv2D(256, 3, activation='relu', padding='same'),
         #tf.keras.layers.Conv2D(256, 3, activation='relu', padding='same'),
         #tf.keras.layers.MaxPooling2D(2, 2),
         #tf.keras.layers.Dropout(0.4),
-        #tf.keras.layers.Flatten(),
+        tf.keras.layers.Flatten(),
 
-        # tf.keras.layers.Dense(512, activation='relu'),
-        # tf.keras.layers.Dropout(0.5),
-        # tf.keras.layers.Dense(256, activation='relu'),
-        # tf.keras.layers.Dropout(0.5),
         tf.keras.layers.Dense(10, activation='softmax')
     ])
 
@@ -147,8 +143,6 @@ def build_and_compile_cnn_model():
       metrics=['accuracy']
     )
 
-    model.summary()
-
     return model
 #-----------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------
@@ -157,39 +151,32 @@ def build_and_compile_cnn_model():
 
 
 # Preprocess all the data and save it (run this only the first time)
-# print('Loading, pre-processing and saving raw dataset')
-# preprocess_and_save_data('dataset', normalize, one_hot_encode)
+print('Loading, pre-processing and saving raw dataset')
+preprocess_and_save_data('dataset', normalize, one_hot_encode)
 
 # Load the saved dataset batches, and save them as joined set
-# print('Loading pre-processed dataset, and join 5 batches')
-# batch1_features, batch1_labels = pickle.load(open('preprocess_batch_1.p', mode='rb'))
-# batch2_features, batch2_labels = pickle.load(open('preprocess_batch_2.p', mode='rb'))
-# batch3_features, batch3_labels = pickle.load(open('preprocess_batch_3.p', mode='rb'))
-# batch4_features, batch4_labels = pickle.load(open('preprocess_batch_4.p', mode='rb'))
-# batch5_features, batch5_labels = pickle.load(open('preprocess_batch_5.p', mode='rb'))
-# batch_all_features = np.concatenate([batch1_features, batch2_features, batch3_features, batch4_features, batch5_features])
-# batch_all_labels = np.concatenate([batch1_labels, batch2_labels, batch3_labels, batch4_labels, batch5_labels])
-# print("Pre-processed batch 1 set shape: {}".format(batch1_features.shape))
-# print("Pre-processed batch 2 set shape: {}".format(batch2_features.shape))
-# print("Pre-processed batch 3 set shape: {}".format(batch3_features.shape))
-# print("Pre-processed batch 4 set shape: {}".format(batch4_features.shape))
-# print("Pre-processed batch 5 set shape: {}".format(batch5_features.shape))
-# print("Pre-processed batch all set shape: {}".format(batch_all_features.shape))
-# pickle.dump((batch_all_features, batch_all_labels), open('preprocess_batch_all.p', 'wb'))
-# del(batch1_features)
-# del(batch2_features)
-# del(batch3_features)
-# del(batch4_features)
-# del(batch5_features)
-# del(batch_all_features)
-# gc.collect()
+print('Loading pre-processed dataset, and join 5 batches')
+batch1_features, batch1_labels = pickle.load(open('preprocess_batch_1.p', mode='rb'))
+batch2_features, batch2_labels = pickle.load(open('preprocess_batch_2.p', mode='rb'))
+batch3_features, batch3_labels = pickle.load(open('preprocess_batch_3.p', mode='rb'))
+batch4_features, batch4_labels = pickle.load(open('preprocess_batch_4.p', mode='rb'))
+batch5_features, batch5_labels = pickle.load(open('preprocess_batch_5.p', mode='rb'))
+batch_all_features = np.concatenate([batch1_features, batch2_features, batch3_features, batch4_features, batch5_features])
+batch_all_labels = np.concatenate([batch1_labels, batch2_labels, batch3_labels, batch4_labels, batch5_labels])
+print("Pre-processed batch 1 set shape: {}".format(batch1_features.shape))
+print("Pre-processed batch 2 set shape: {}".format(batch2_features.shape))
+print("Pre-processed batch 3 set shape: {}".format(batch3_features.shape))
+print("Pre-processed batch 4 set shape: {}".format(batch4_features.shape))
+print("Pre-processed batch 5 set shape: {}".format(batch5_features.shape))
+print("Pre-processed batch all set shape: {}".format(batch_all_features.shape))
+pickle.dump((batch_all_features, batch_all_labels), open('preprocess_batch_all.p', 'wb'))
 
 # Load dataset
 print('Loading pre-processed training/testing/validation dataset')
 training_features, training_labels = pickle.load(open('preprocess_batch_all.p', mode='rb'))
 testing_features, testing_labels = pickle.load(open('preprocess_training.p', mode='rb'))
 validation_features, validation_labels = pickle.load(open('preprocess_validation.p', mode='rb'))
-print("Pre-processed training set shape: {}".format(training_features.shape))
+print("Pre-processed training set shape: {}, {}".format(training_features.shape, training_labels.shape))
 print("Pre-processed testing set shape: {}".format(testing_features.shape))
 print("Pre-processed validation set shape: {}".format(validation_features.shape))
 
@@ -211,8 +198,8 @@ BATCH_SIZE_PER_REPLICA = 64
 BATCH_SIZE = BATCH_SIZE_PER_REPLICA * NUM_OF_WORKERS
 options = tf.data.Options()
 options.experimental_distribute.auto_shard = False
-train_dataset = train_dataset_unbatched.shuffle(BUFFER_SIZE).batch(BATCH_SIZE).with_options(options)
-test_dataset = test_dataset_unbatched.batch(BATCH_SIZE).with_options(options)
+train_dataset = train_dataset_unbatched#.shuffle(BUFFER_SIZE).batch(BATCH_SIZE).with_options(options)
+test_dataset = test_dataset_unbatched#.batch(BATCH_SIZE).with_options(options)
 
 # Build and train the model as multi worker
 with strategy.scope():
